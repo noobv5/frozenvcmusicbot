@@ -327,8 +327,8 @@ async def fetch_youtube_link_backup(query):
     except Exception as e:
         raise Exception(f"Backup Search API error: {e}")
     
-BOT_NAME = os.environ.get("BOT_NAME", "Frozen Music")
-BOT_LINK = os.environ.get("BOT_LINK", "https://t.me/vcmusiclubot")
+BOT_NAME = os.environ.get("BOT_NAME", "@YOUV2PLAYBOT")
+BOT_LINK = os.environ.get("BOT_LINK", "https://t.me/YOUV1")
 
 from pyrogram.errors import UserAlreadyParticipant, RPCError
 
@@ -399,10 +399,10 @@ async def start_handler(_, message):
     buttons = [
         [
             InlineKeyboardButton(f"➕ {add_me_text}", url=f"{BOT_LINK}?startgroup=true"),
-            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/vibeshiftbots")
+            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/YOUV1")
         ],
         [
-            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/Frozensupport1"),
+            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/+yxoojuaOI0g4MWNl"),
             InlineKeyboardButton(f"❓ {help_text}", callback_data="show_help")
         ]
     ]
@@ -454,10 +454,10 @@ async def go_back_callback(_, callback_query):
     buttons = [
         [
             InlineKeyboardButton(f"➕ {add_me_text}", url=f"{BOT_LINK}?startgroup=true"),
-            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/vibeshiftbots")
+            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/YOUV1")
         ],
         [
-            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/Frozensupport1"),
+            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/+yxoojuaOI0g4MWNl"),
             InlineKeyboardButton(f"❓ {help_text}", callback_data="show_help")
         ]
     ]
@@ -468,7 +468,6 @@ async def go_back_callback(_, callback_query):
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=reply_markup
     )
-
 
 
 @bot.on_callback_query(filters.regex("^show_help$"))
@@ -931,7 +930,7 @@ async def fallback_local_playback(chat_id: int, message: Message, song_info: dic
         one_line = _one_line_title(song_info["title"])
         base_caption = (
             "<blockquote>"
-            "<b>🎧 Frozen ✘ Music Streaming</b> (Local Playback)\n\n"
+            "<b>🎧 you v 1 ✘ Music Streaming</b> (Local Playback)\n\n"
             f"❍ <b>Title:</b> {one_line}\n"
             f"❍ <b>Requested by:</b> {song_info['requester']}"
             "</blockquote>"
@@ -1523,8 +1522,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Fetch bot name and link and set default values from environment
-    BOT_NAME = os.environ.get("BOT_NAME", "Frozen Music")
-    BOT_LINK = os.environ.get("BOT_LINK", "https://t.me/vcmusiclubot")
+    BOT_NAME = os.environ.get("BOT_NAME", "you v 1 Music")
+    BOT_LINK = os.environ.get("BOT_LINK", "@YOUV2PLAYBOT")
     logger.info(f"Bot name set to: {BOT_NAME}")
     logger.info(f"Bot link set to: {BOT_LINK}")
 
