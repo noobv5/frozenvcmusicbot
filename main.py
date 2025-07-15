@@ -64,7 +64,7 @@ API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 ASSISTANT_SESSION = os.environ.get("ASSISTANT_SESSION")
-OWNER_ID = int(os.getenv("OWNER_ID", "5268762773"))
+OWNER_ID = int(os.getenv("OWNER_ID", "6829790680")) # OWNER_ID আপডেট করা হয়েছে
 
 # ——— Monkey-patch resolve_peer ——————————————
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
@@ -104,13 +104,13 @@ ASSISTANT_CHAT_ID = os.getenv("ASSISTANT_CHAT_ID")
 API_ASSISTANT_USERNAME = os.getenv("API_ASSISTANT_USERNAME")
 
 if not ASSISTANT_USERNAME or not ASSISTANT_CHAT_ID or not API_ASSISTANT_USERNAME:
-    print("Assistant username and chat ID not set")
+    print("অ্যাসিস্ট্যান্ট ইউজারনেম এবং চ্যাট আইডি সেট করা নেই") # Bengali: Assistant username and chat ID not set
 else:
     # Convert chat ID to integer if needed
     try:
         ASSISTANT_CHAT_ID = int(ASSISTANT_CHAT_ID)
     except ValueError:
-        print("Invalid ASSISTANT_CHAT_ID: not an integer")
+        print("অবৈধ ASSISTANT_CHAT_ID: পূর্ণসংখ্যা নয়") # Bengali: Invalid ASSISTANT_CHAT_ID: not an integer
 
 # API Endpoints
 API_URL = os.environ.get("API_URL")
@@ -154,19 +154,19 @@ async def process_pending_command(chat_id, delay):
 async def skip_to_next_song(chat_id, message):
     """Skips to the next song in the queue and starts playback."""
     if chat_id not in chat_containers or not chat_containers[chat_id]:
-        await message.edit("❌ No more songs in the queue.")
+        await message.edit("❌ কিউতে আর কোন গান নেই।") # Bengali: No more songs in the queue.
         await leave_voice_chat(chat_id)
         return
 
-    await message.edit("⏭ Skipping to the next song...")
+    await message.edit("⏭ পরবর্তী গানে স্কিপ করা হচ্ছে...") # Bengali: Skipping to the next song...
 
     # Pick next song from queue
     next_song_info = chat_containers[chat_id][0]
     try:
         await fallback_local_playback(chat_id, message, next_song_info)
     except Exception as e:
-        print(f"Error starting next local playback: {e}")
-        await bot.send_message(chat_id, f"❌ Failed to start next song: {e}")
+        print(f"পরবর্তী স্থানীয় প্লেব্যাক শুরু করতে ত্রুটি: {e}") # Bengali: Error starting next local playback: {e}
+        await bot.send_message(chat_id, f"❌ পরবর্তী গান শুরু করতে ব্যর্থ: {e}") # Bengali: Failed to start next song: {e}
 
 
 
@@ -186,11 +186,11 @@ def safe_handler(func):
             except Exception:
                 chat_id = "Unknown"
             error_text = (
-                f"Error in handler `{func.__name__}` (chat id: {chat_id}):\n\n{str(e)}"
+                f"হ্যান্ডলার `{func.__name__}` এ ত্রুটি (চ্যাট আইডি: {chat_id}):\n\n{str(e)}" # Bengali: Error in handler `{func.__name__}` (chat id: {chat_id}):\n\n{str(e)}"
             )
             print(error_text)
             # Log the error to support
-            await bot.send_message(5268762773, error_text)
+            await bot.send_message(6829790680, error_text) # OWNER_ID আপডেট করা হয়েছে
     return wrapper
 
 
@@ -204,12 +204,12 @@ async def extract_invite_link(client, chat_id):
         return None
     except ValueError as e:
         if "Peer id invalid" in str(e):
-            print(f"Invalid peer ID for chat {chat_id}. Skipping invite link extraction.")
+            print(f"চ্যাট {chat_id} এর জন্য অবৈধ পিয়ার আইডি। আমন্ত্রণ লিঙ্ক নিষ্কাশন এড়ানো হচ্ছে।") # Bengali: Invalid peer ID for chat {chat_id}. Skipping invite link extraction.
             return None
         else:
             raise e  # re-raise if it's another ValueError
     except Exception as e:
-        print(f"Error extracting invite link for chat {chat_id}: {e}")
+        print(f"চ্যাট {chat_id} এর জন্য আমন্ত্রণ লিঙ্ক নিষ্কাশন করতে ত্রুটি: {e}") # Bengali: Error extracting invite link for chat {chat_id}: {e}
         return None
 
 async def extract_target_user(message: Message):
@@ -220,7 +220,7 @@ async def extract_target_user(message: Message):
     # Otherwise expect an argument like "/ban @user" or "/ban 123456"
     parts = message.text.split()
     if len(parts) < 2:
-        await message.reply("❌ You must reply to a user or specify their @username/user_id.")
+        await message.reply("❌ আপনাকে একটি ব্যবহারকারীকে রিপ্লাই করতে হবে অথবা তাদের @ইউজারনেম/ইউজার_আইডি উল্লেখ করতে হবে।") # Bengali: You must reply to a user or specify their @username/user_id.
         return None
 
     target = parts[1]
@@ -231,7 +231,7 @@ async def extract_target_user(message: Message):
         user = await message._client.get_users(target)
         return user.id
     except:
-        await message.reply("❌ Could not find that user.")
+        await message.reply("❌ এই ব্যবহারকারীকে খুঁজে পাওয়া যায়নি।") # Bengali: Could not find that user.
         return None
 
 
@@ -246,7 +246,7 @@ async def is_assistant_in_chat(chat_id):
             return "banned"
         elif "USER_NOT_PARTICIPANT" in error_message or "Chat not found" in error_message:
             return False
-        print(f"Error checking assistant in chat: {e}")
+        print(f"চ্যাটে অ্যাসিস্ট্যান্ট পরীক্ষা করতে ত্রুটি: {e}") # Bengali: Error checking assistant in chat: {e}
         return False
 
 async def is_api_assistant_in_chat(chat_id):
@@ -254,7 +254,7 @@ async def is_api_assistant_in_chat(chat_id):
         member = await bot.get_chat_member(chat_id, API_ASSISTANT_USERNAME)
         return member.status is not None
     except Exception as e:
-        print(f"Error checking API assistant in chat: {e}")
+        print(f"চ্যাটে API অ্যাসিস্ট্যান্ট পরীক্ষা করতে ত্রুটি: {e}") # Bengali: Error checking API assistant in chat: {e}
         return False
     
 def iso8601_to_seconds(iso_duration):
@@ -262,7 +262,7 @@ def iso8601_to_seconds(iso_duration):
         duration = isodate.parse_duration(iso_duration)
         return int(duration.total_seconds())
     except Exception as e:
-        print(f"Error parsing duration: {e}")
+        print(f"সময়কাল পার্স করতে ত্রুটি: {e}") # Bengali: Error parsing duration: {e}
         return 0
 
 
@@ -276,7 +276,7 @@ def iso8601_to_human_readable(iso_duration):
             return f"{hours}:{minutes:02}:{seconds:02}"
         return f"{minutes}:{seconds:02}"
     except Exception as e:
-        return "Unknown duration"
+        return "অজানা সময়কাল" # Bengali: Unknown duration
 
 async def fetch_youtube_link(query):
     try:
@@ -295,15 +295,15 @@ async def fetch_youtube_link(query):
                             data.get("thumbnail")
                         )
                 else:
-                    raise Exception(f"API returned status code {response.status}")
+                    raise Exception(f"API স্ট্যাটাস কোড {response.status} ফেরত দিয়েছে") # Bengali: API returned status code {response.status}
     except Exception as e:
-        raise Exception(f"Failed to fetch YouTube link: {str(e)}")
+        raise Exception(f"ইউটিউব লিঙ্ক আনতে ব্যর্থ: {str(e)}") # Bengali: Failed to fetch YouTube link: {str(e)}
 
 
     
 async def fetch_youtube_link_backup(query):
     if not BACKUP_SEARCH_API_URL:
-        raise Exception("Backup Search API URL not configured")
+        raise Exception("ব্যাকআপ সার্চ API URL কনফিগার করা হয়নি") # Bengali: Backup Search API URL not configured
     # Build the correct URL:
     backup_url = (
         f"{BACKUP_SEARCH_API_URL.rstrip('/')}"
@@ -313,7 +313,7 @@ async def fetch_youtube_link_backup(query):
         async with aiohttp.ClientSession() as session:
             async with session.get(backup_url, timeout=30) as resp:
                 if resp.status != 200:
-                    raise Exception(f"Backup API returned status {resp.status}")
+                    raise Exception(f"ব্যাকআপ API স্ট্যাটাস {resp.status} ফেরত দিয়েছে") # Bengali: Backup API returned status {resp.status}
                 data = await resp.json()
                 # Mirror primary API’s return:
                 if "playlist" in data:
@@ -325,10 +325,10 @@ async def fetch_youtube_link_backup(query):
                     data.get("thumbnail")
                 )
     except Exception as e:
-        raise Exception(f"Backup Search API error: {e}")
+        raise Exception(f"ব্যাকআপ সার্চ API ত্রুটি: {e}") # Bengali: Backup Search API error: {e}
     
-BOT_NAME = os.environ.get("BOT_NAME", "Frozen Music")
-BOT_LINK = os.environ.get("BOT_LINK", "https://t.me/vcmusiclubot")
+BOT_NAME = os.environ.get("BOT_NAME", "আপনার বট") # Updated BOT_NAME to a generic "আপনার বট"
+BOT_LINK = os.environ.get("BOT_LINK", "https://t.me/YOUV2PLAYBOT") # Updated BOT_LINK
 
 from pyrogram.errors import UserAlreadyParticipant, RPCError
 
@@ -349,13 +349,13 @@ async def invite_assistant(chat_id, invite_link, processing_message):
 
     except RPCError as e:
         # Handle other Pyrogram RPC errors
-        error_message = f"❌ Error while inviting assistant: Telegram says: {e.code} {e.error_message}"
+        error_message = f"❌ অ্যাসিস্ট্যান্ট আমন্ত্রণ করার সময় ত্রুটি: টেলিগ্রাম বলছে: {e.code} {e.error_message}" # Bengali: Error while inviting assistant: Telegram says:
         await processing_message.edit(error_message)
         return False
 
     except Exception as e:
         # Catch-all for any unexpected exceptions
-        error_message = f"❌ Unexpected error while inviting assistant: {str(e)}"
+        error_message = f"❌ অ্যাসিস্ট্যান্ট আমন্ত্রণ করার সময় অপ্রত্যাশিত ত্রুটি: {str(e)}" # Bengali: Unexpected error while inviting assistant:
         await processing_message.edit(error_message)
         return False
 
@@ -379,30 +379,30 @@ async def start_handler(_, message):
     styled_name = to_bold_unicode(raw_name)
     user_link = f"[{styled_name}](tg://user?id={user_id})"
 
-    add_me_text = to_bold_unicode("Add Me")
-    updates_text = to_bold_unicode("Updates")
-    support_text = to_bold_unicode("Support")
-    help_text = to_bold_unicode("Help")
+    add_me_text = to_bold_unicode("আমাকে যুক্ত করুন") # Bengali: Add Me
+    updates_text = to_bold_unicode("আপডেটসমূহ") # Bengali: Updates
+    support_text = to_bold_unicode("সহায়তা") # Bengali: Support
+    help_text = to_bold_unicode("সাহায্য") # Bengali: Help
 
     caption = (
-        f"👋 нєу {user_link} 💠, 🥀\n\n"
-        f">🎶 𝗪𝗘𝗟𝗖𝗢𝗠𝗘 𝗧𝗢 {BOT_NAME.upper()}! 🎵\n"
-        ">🚀 𝗧𝗢𝗣-𝗡𝗢𝗧𝗖𝗛 24×7 𝗨𝗣𝗧𝗜𝗠𝗘 & 𝗦𝗨𝗣𝗣𝗢𝗥𝗧\n"
-        ">🔊 𝗖𝗥𝗬𝗦𝗧𝗔𝗟-𝗖𝗟𝗘𝗔𝗥 𝗔𝗨𝗗𝗜𝗢\n"
-        ">🎧 𝗦𝗨𝗣𝗣𝗢𝗥𝗧𝗘𝗗 𝗣𝗟𝗔𝗧𝗙𝗢𝗥𝗠𝗦: YouTube | Spotify | Resso | Apple Music | SoundCloud\n"
-        ">✨ 𝗔𝗨𝗧𝗢-𝗦𝗨𝗚𝗚𝗘𝗦𝗧𝗜𝗢𝗡𝗦 when queue ends\n"
-        ">🛠️ 𝗔𝗗𝗠𝗜𝗡 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦: Pause, Resume, Skip, Stop, Mute, Unmute, Tmute, Kick, Ban, Unban, Couple\n"
-        ">❤️ 𝗖𝗢𝗨𝗣𝗟𝗘 𝗦𝗨𝗚𝗚𝗘𝗦𝗧𝗜𝗢𝗡 (pick random pair in group)\n"
-        f"๏ ᴄʟɪᴄᴋ {help_text} ʙᴇʟᴏᴡ ғᴏʀ ᴄᴏᴍᴍᴀɴᴅ ʟɪsᴛ."
+        f"👋 হে {user_link} 💠, 🥀\n\n"
+        f">🎶 {BOT_NAME.upper()} এ স্বাগতম! 🎵\n" # Bengali: WELCOME TO YOUR BOT!
+        f">🚀 সেরা ২৪x৭ আপটাইম ও সহায়তা\n" # Bengali: TOP-NOTCH 24x7 UPTIME & SUPPORT
+        f">🔊 ক্রিস্টাল-ক্লিয়ার অডিও\n" # Bengali: CRYSTAL-CLEAR AUDIO
+        f">🎧 সমর্থিত প্ল্যাটফর্ম: YouTube | Spotify | Resso | Apple Music | SoundCloud\n" # Bengali: SUPPORTED PLATFORMS
+        f">✨ কিউ শেষ হলে স্বয়ংক্রিয় পরামর্শ\n" # Bengali: AUTO-SUGGESTIONS when queue ends
+        f">🛠️ অ্যাডমিন কমান্ড: পজ, রেজ্যুম, স্কিপ, স্টপ, মিউট, আনমিউট, টিমিউট, কিক, ব্যান, আনব্যান, কাপল\n" # Bengali: ADMIN COMMANDS
+        f">❤️ কাপল সাজেশন (গ্রুপে র্যান্ডম জোড়া নির্বাচন)\n" # Bengali: COUPLE SUGGESTION (pick random pair in group)
+        f"๏ কমান্ড তালিকা দেখতে নিচে {help_text} ক্লিক করুন।" # Bengali: Click Help below for command list.
     )
 
     buttons = [
         [
-            InlineKeyboardButton(f"➕ {add_me_text}", url=f"{BOT_LINK}?startgroup=true"),
-            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/vibeshiftbots")
+            InlineKeyboardButton(f"➕ {add_me_text}", url=f"{BOT_LINK}?startgroup=true"), # BOT_LINK আপডেট করা হয়েছে
+            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/+yxoojuaOI0g4MWNl") # Updates link আপডেট করা হয়েছে
         ],
         [
-            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/Frozensupport1"),
+            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/YOUV1"), # Support link আপডেট করা হয়েছে
             InlineKeyboardButton(f"❓ {help_text}", callback_data="show_help")
         ]
     ]
@@ -434,30 +434,30 @@ async def go_back_callback(_, callback_query):
     styled_name = to_bold_unicode(raw_name)
     user_link = f"[{styled_name}](tg://user?id={user_id})"
 
-    add_me_text = to_bold_unicode("Add Me")
-    updates_text = to_bold_unicode("Updates")
-    support_text = to_bold_unicode("Support")
-    help_text = to_bold_unicode("Help")
+    add_me_text = to_bold_unicode("আমাকে যুক্ত করুন") # Bengali: Add Me
+    updates_text = to_bold_unicode("আপডেটসমূহ") # Bengali: Updates
+    support_text = to_bold_unicode("সহায়তা") # Bengali: Support
+    help_text = to_bold_unicode("সাহায্য") # Bengali: Help
 
     caption = (
-        f"👋 нєу {user_link} 💠, 🥀\n\n"
-        f">🎶 𝗪𝗘𝗟𝗖𝗢𝗠𝗘 𝗧𝗢 {BOT_NAME.upper()}! 🎵\n"
-        ">🚀 𝗧𝗢𝗣-𝗡𝗢𝗧𝗖𝗛 24×7 𝗨𝗣𝗧𝗜𝗠𝗘 & 𝗦𝗨𝗣𝗣𝗢𝗥𝗧\n"
-        ">🔊 𝗖𝗥𝗬𝗦𝗧𝗔𝗟-𝗖𝗟𝗘𝗔𝗥 𝗔𝗨𝗗𝗜𝗢\n"
-        ">🎧 𝗦𝗨𝗣𝗣𝗢𝗥𝗧𝗘𝗗 𝗣𝗟𝗔𝗧𝗙𝗢𝗥𝗠𝗦: YouTube | Spotify | Resso | Apple Music | SoundCloud\n"
-        ">✨ 𝗔𝗨𝗧𝗢-𝗦𝗨𝗚𝗚𝗘𝗦𝗧𝗜𝗢𝗡𝗦 when queue ends\n"
-        ">🛠️ 𝗔𝗗𝗠𝗜𝗡 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦: Pause, Resume, Skip, Stop, Mute, Unmute, Tmute, Kick, Ban, Unban, Couple\n"
-        ">❤️ 𝗖𝗢𝗨𝗣𝗟𝗘 (pick random pair in group)\n"
-        f"๏ ᴄʟɪᴄᴋ {help_text} ʙᴇʟᴏᴡ ғᴏʀ ᴄᴏᴍᴍᴀɴᴅ ʟɪsᴛ."
+        f"👋 হে {user_link} 💠, 🥀\n\n"
+        f">🎶 {BOT_NAME.upper()} এ স্বাগতম! 🎵\n" # Bengali: WELCOME TO YOUR BOT!
+        f">🚀 সেরা ২৪x৭ আপটাইম ও সহায়তা\n" # Bengali: TOP-NOTCH 24x7 UPTIME & SUPPORT
+        f">🔊 ক্রিস্টাল-ক্লিয়ার অডিও\n" # Bengali: CRYSTAL-CLEAR AUDIO
+        f">🎧 সমর্থিত প্ল্যাটফর্ম: YouTube | Spotify | Resso | Apple Music | SoundCloud\n" # Bengali: SUPPORTED PLATFORMS
+        f">✨ কিউ শেষ হলে স্বয়ংক্রিয় পরামর্শ\n" # Bengali: AUTO-SUGGESTIONS when queue ends
+        f">🛠️ অ্যাডমিন কমান্ড: পজ, রেজ্যুম, স্কিপ, স্টপ, মিউট, আনমিউট, টিমিউট, কিক, ব্যান, আনব্যান, কাপল\n" # Bengali: ADMIN COMMANDS
+        f">❤️ কাপল (গ্রুপে র্যান্ডম জোড়া নির্বাচন)\n" # Bengali: COUPLE (pick random pair in group)
+        f"๏ কমান্ড তালিকা দেখতে নিচে {help_text} ক্লিক করুন।" # Bengali: Click Help below for command list.
     )
 
     buttons = [
         [
-            InlineKeyboardButton(f"➕ {add_me_text}", url=f"{BOT_LINK}?startgroup=true"),
-            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/vibeshiftbots")
+            InlineKeyboardButton(f"➕ {add_me_text}", url=f"{BOT_LINK}?startgroup=true"), # BOT_LINK আপডেট করা হয়েছে
+            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/+yxoojuaOI0g4MWNl") # Updates link আপডেট করা হয়েছে
         ],
         [
-            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/Frozensupport1"),
+            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/YOUV1"), # Support link আপডেট করা হয়েছে
             InlineKeyboardButton(f"❓ {help_text}", callback_data="show_help")
         ]
     ]
@@ -473,18 +473,18 @@ async def go_back_callback(_, callback_query):
 
 @bot.on_callback_query(filters.regex("^show_help$"))
 async def show_help_callback(_, callback_query):
-    help_text = ">📜 *Choose a category to explore commands:*"
+    help_text = ">📜 *কমান্ডগুলি অন্বেষণ করতে একটি বিভাগ নির্বাচন করুন:*" # Bengali: Choose a category to explore commands:
     buttons = [
         [
-            InlineKeyboardButton("🎵 Music Controls", callback_data="help_music"),
-            InlineKeyboardButton("🛡️ Admin Tools", callback_data="help_admin")
+            InlineKeyboardButton("🎵 সঙ্গীত নিয়ন্ত্রণ", callback_data="help_music"), # Bengali: Music Controls
+            InlineKeyboardButton("🛡️ অ্যাডমিন টুলস", callback_data="help_admin") # Bengali: Admin Tools
         ],
         [
-            InlineKeyboardButton("❤️ Couple Suggestion", callback_data="help_couple"),
-            InlineKeyboardButton("🔍 Utility", callback_data="help_util")
+            InlineKeyboardButton("❤️ কাপল সাজেশন", callback_data="help_couple"), # Bengali: Couple Suggestion
+            InlineKeyboardButton("🔍 ইউটিলিটি", callback_data="help_util") # Bengali: Utility
         ],
         [
-            InlineKeyboardButton("🏠 Home", callback_data="go_back")
+            InlineKeyboardButton("🏠 হোম", callback_data="go_back") # Bengali: Home
         ]
     ]
     reply_markup = InlineKeyboardMarkup(buttons)
@@ -494,73 +494,73 @@ async def show_help_callback(_, callback_query):
 @bot.on_callback_query(filters.regex("^help_music$"))
 async def help_music_callback(_, callback_query):
     text = (
-        ">🎵 *Music & Playback Commands*\n\n"
-        ">➜ `/play <song name or URL>`\n"
-        "   • Play a song (YouTube/Spotify/Resso/Apple Music/SoundCloud).\n"
-        "   • If replied to an audio/video, plays it directly.\n\n"
+        ">🎵 *সঙ্গীত ও প্লেব্যাক কমান্ড*\n\n" # Bengali: Music & Playback Commands
+        ">➜ `/play <গানের নাম বা URL>`\n" # Bengali: song name or URL
+        "   • একটি গান চালান (YouTube/Spotify/Resso/Apple Music/SoundCloud)।\n" # Bengali: Play a song
+        "   • যদি একটি অডিও/ভিডিওতে রিপ্লাই করা হয়, তবে এটি সরাসরি প্লে করে।\n\n" # Bengali: If replied to an audio/video, plays it directly.
         ">➜ `/playlist`\n"
-        "   • View or manage your saved playlist.\n\n"
+        "   • আপনার সংরক্ষিত প্লেলিস্ট দেখুন বা পরিচালনা করুন।\n\n" # Bengali: View or manage your saved playlist.
         ">➜ `/skip`\n"
-        "   • Skip the currently playing song. (Admins only)\n\n"
+        "   • বর্তমানে বাজানো গানটি এড়িয়ে যান। (শুধুমাত্র অ্যাডমিন)\n\n" # Bengali: Skip the currently playing song. (Admins only)
         ">➜ `/pause`\n"
-        "   • Pause the current stream. (Admins only)\n\n"
+        "   • বর্তমান স্ট্রিম থামান। (শুধুমাত্র অ্যাডমিন)\n\n" # Bengali: Pause the current stream. (Admins only)
         ">➜ `/resume`\n"
-        "   • Resume a paused stream. (Admins only)\n\n"
-        ">➜ `/stop` or `/end`\n"
-        "   • Stop playback and clear the queue. (Admins only)"
+        "   • একটি থামা স্ট্রিম আবার শুরু করুন। (শুধুমাত্র অ্যাডমিন)\n\n" # Bengali: Resume a paused stream. (Admins only)
+        ">➜ `/stop` অথবা `/end`\n"
+        "   • প্লেব্যাক বন্ধ করুন এবং কিউ পরিষ্কার করুন। (শুধুমাত্র অ্যাডমিন)" # Bengali: Stop playback and clear the queue. (Admins only)
     )
-    buttons = [[InlineKeyboardButton("🔙 Back", callback_data="show_help")]]
+    buttons = [[InlineKeyboardButton("🔙 ফিরে যান", callback_data="show_help")]] # Bengali: Back
     await callback_query.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @bot.on_callback_query(filters.regex("^help_admin$"))
 async def help_admin_callback(_, callback_query):
     text = (
-        "🛡️ *Admin & Moderation Commands*\n\n"
+        "🛡️ *অ্যাডমিন ও মডারেশন কমান্ড*\n\n" # Bengali: Admin & Moderation Commands
         ">➜ `/mute @user`\n"
-        "   • Mute a user indefinitely. (Admins only)\n\n"
+        "   • একজন ব্যবহারকারীকে অনির্দিষ্টকালের জন্য মিউট করুন। (শুধুমাত্র অ্যাডমিন)\n\n" # Bengali: Mute a user indefinitely. (Admins only)
         ">➜ `/unmute @user`\n"
-        "   • Unmute a previously muted user. (Admins only)\n\n"
-        ">➜ `/tmute @user <minutes>`\n"
-        "   • Temporarily mute for a set duration. (Admins only)\n\n"
+        "   • পূর্বে মিউট করা ব্যবহারকারীকে আনমিউট করুন। (শুধুমাত্র অ্যাডমিন)\n\n" # Bengali: Unmute a previously muted user. (Admins only)
+        ">➜ `/tmute @user <মিনিট>`\n" # Bengali: minutes
+        "   • একটি নির্দিষ্ট সময়ের জন্য অস্থায়ীভাবে মিউট করুন। (শুধুমাত্র অ্যাডমিন)\n\n" # Bengali: Temporarily mute for a set duration. (Admins only)
         ">➜ `/kick @user`\n"
-        "   • Kick (ban + unban) a user immediately. (Admins only)\n\n"
+        "   • একজন ব্যবহারকারীকে অবিলম্বে কিক করুন (ব্যান + আনব্যান)। (শুধুমাত্র অ্যাডমিন)\n\n" # Bengali: Kick (ban + unban) a user immediately. (Admins only)
         ">➜ `/ban @user`\n"
-        "   • Ban a user. (Admins only)\n\n"
+        "   • একজন ব্যবহারকারীকে ব্যান করুন। (শুধুমাত্র অ্যাডমিন)\n\n" # Bengali: Ban a user. (Admins only)
         ">➜ `/unban @user`\n"
-        "   • Unban a previously banned user. (Admins only)"
+        "   • পূর্বে ব্যান করা ব্যবহারকারীকে আনব্যান করুন। (শুধুমাত্র অ্যাডমিন)" # Bengali: Unban a previously banned user. (Admins only)
     )
-    buttons = [[InlineKeyboardButton("🔙 Back", callback_data="show_help")]]
+    buttons = [[InlineKeyboardButton("🔙 ফিরে যান", callback_data="show_help")]] # Bengali: Back
     await callback_query.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @bot.on_callback_query(filters.regex("^help_couple$"))
 async def help_couple_callback(_, callback_query):
     text = (
-        "❤️ *Couple Suggestion Command*\n\n"
+        "❤️ *কাপল সাজেশন কমান্ড*\n\n" # Bengali: Couple Suggestion Command
         ">➜ `/couple`\n"
-        "   • Picks two random non-bot members and posts a “couple” image with their names.\n"
-        "   • Caches daily so the same pair appears until midnight UTC.\n"
-        "   • Uses per-group member cache for speed."
+        "   • দুটি এলোমেলো নন-বট সদস্যকে নির্বাচন করে এবং তাদের নাম সহ একটি “কাপল” ছবি পোস্ট করে।\n" # Bengali: Picks two random non-bot members and posts a “couple” image with their names.
+        "   • প্রতিদিন ক্যাশ করা হয় যাতে মধ্যরাত UTC পর্যন্ত একই জোড়া প্রদর্শিত হয়।\n" # Bengali: Caches daily so the same pair appears until midnight UTC.
+        "   • দ্রুততার জন্য প্রতি-গ্রুপ সদস্য ক্যাশ ব্যবহার করে।" # Bengali: Uses per-group member cache for speed.
     )
-    buttons = [[InlineKeyboardButton("🔙 Back", callback_data="show_help")]]
+    buttons = [[InlineKeyboardButton("🔙 ফিরে যান", callback_data="show_help")]] # Bengali: Back
     await callback_query.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @bot.on_callback_query(filters.regex("^help_util$"))
 async def help_util_callback(_, callback_query):
     text = (
-        "🔍 *Utility & Extra Commands*\n\n"
+        "🔍 *ইউটিলিটি ও অতিরিক্ত কমান্ড*\n\n" # Bengali: Utility & Extra Commands
         ">➜ `/ping`\n"
-        "   • Check bot’s response time and uptime.\n\n"
+        "   • বটের প্রতিক্রিয়া সময় এবং আপটাইম পরীক্ষা করুন।\n\n" # Bengali: Check bot’s response time and uptime.
         ">➜ `/clear`\n"
-        "   • Clear the entire queue. (Admins only)\n\n"
-        ">➜ Auto-Suggestions:\n"
-        "   • When the queue ends, the bot automatically suggests new songs via inline buttons.\n\n"
-        ">➜ *Audio Quality & Limits*\n"
-        "   • Streams up to 2 hours 10 minutes, but auto-fallback for longer. (See `MAX_DURATION_SECONDS`)\n"
+        "   • সম্পূর্ণ কিউ পরিষ্কার করুন। (শুধুমাত্র অ্যাডমিন)\n\n" # Bengali: Clear the entire queue. (Admins only)
+        ">➜ স্বয়ংক্রিয় পরামর্শ:\n" # Bengali: Auto-Suggestions:
+        "   • যখন কিউ শেষ হয়, বট স্বয়ংক্রিয়ভাবে ইনলাইন বাটনগুলির মাধ্যমে নতুন গান সুপারিশ করে।\n\n" # Bengali: When the queue ends, the bot automatically suggests new songs via inline buttons.
+        ">➜ *অডিও গুণমান ও সীমা*\n" # Bengali: Audio Quality & Limits
+        "   • ২ ঘন্টা ১০ মিনিট পর্যন্ত স্ট্রিম করে, তবে দীর্ঘ সময়ের জন্য স্বয়ংক্রিয় ফলব্যাক। (দেখুন `MAX_DURATION_SECONDS`)\n" # Bengali: Streams up to 2 hours 10 minutes, but auto-fallback for longer. (See `MAX_DURATION_SECONDS`)
     )
-    buttons = [[InlineKeyboardButton("🔙 Back", callback_data="show_help")]]
+    buttons = [[InlineKeyboardButton("🔙 ফিরে যান", callback_data="show_help")]] # Bengali: Back
     await callback_query.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=InlineKeyboardMarkup(buttons))
 
 
@@ -577,14 +577,14 @@ async def play_handler(_, message: Message):
         fresh = await bot.get_messages(orig.chat.id, orig.id)
         media = fresh.video or fresh.audio
         if fresh.audio and getattr(fresh.audio, 'file_size', 0) > 100 * 1024 * 1024:
-            await processing_message.edit("❌ Audio file too large. Maximum allowed size is 100MB.")
+            await processing_message.edit("❌ অডিও ফাইল খুব বড়। সর্বাধিক অনুমোদিত আকার ১০০MB।") # Bengali: Audio file too large. Maximum allowed size is 100MB.
             return
 
-        await processing_message.edit("⏳ Please wait, downloading audio…")
+        await processing_message.edit("⏳ অনুগ্রহ করে অপেক্ষা করুন, অডিও ডাউনলোড হচ্ছে...") # Bengali: Please wait, downloading audio…
         try:
             file_path = await bot.download_media(media)
         except Exception as e:
-            await processing_message.edit(f"❌ Failed to download media: {e}")
+            await processing_message.edit(f"❌ মিডিয়া ডাউনলোড করতে ব্যর্থ: {e}") # Bengali: Failed to download media: {e}
             return
 
         # Download thumbnail if available
@@ -597,7 +597,7 @@ async def play_handler(_, message: Message):
 
         # Prepare song_info and fallback to local playback
         duration = media.duration or 0
-        title = getattr(media, 'file_name', 'Untitled')
+        title = getattr(media, 'file_name', 'শিরোনামহীন') # Bengali: Untitled
         song_info = {
             'url': file_path,
             'title': title,
@@ -623,9 +623,9 @@ async def play_handler(_, message: Message):
     if chat_id in chat_last_command and (now_ts - chat_last_command[chat_id]) < COOLDOWN:
         remaining = int(COOLDOWN - (now_ts - chat_last_command[chat_id]))
         if chat_id in chat_pending_commands:
-            await bot.send_message(chat_id, f"⏳ A command is already queued for this chat. Please wait {remaining}s.")
+            await bot.send_message(chat_id, f"⏳ এই চ্যাটের জন্য একটি কমান্ড ইতিমধ্যেই কিউতে আছে। অনুগ্রহ করে {remaining} সেকেন্ড অপেক্ষা করুন।") # Bengali: A command is already queued for this chat. Please wait {remaining}s.
         else:
-            cooldown_reply = await bot.send_message(chat_id, f"⏳ On cooldown. Processing in {remaining}s.")
+            cooldown_reply = await bot.send_message(chat_id, f"⏳ কুলডাউন। {remaining} সেকেন্ডে প্রক্রিয়া করা হচ্ছে।") # Bengali: On cooldown. Processing in {remaining}s.
             chat_pending_commands[chat_id] = (message, cooldown_reply)
             asyncio.create_task(process_pending_command(chat_id, remaining))
         return
@@ -634,8 +634,8 @@ async def play_handler(_, message: Message):
     if not query:
         await bot.send_message(
             chat_id,
-            "❌ You did not specify a song.\n\n"
-            "Correct usage: /play <song name>\nExample: /play shape of you"
+            "❌ আপনি কোনো গান উল্লেখ করেননি।\n\n" # Bengali: You did not specify a song.
+            "সঠিক ব্যবহার: /play <গানের নাম>\nউদাহরণ: /play shape of you" # Bengali: Correct usage: /play <song name>\nExample: /play shape of you
         )
         return
 
@@ -651,13 +651,13 @@ async def process_play_command(message: Message, query: str):
     # --- ensure assistant is in the chat before we queue/play anything ----
     status = await is_assistant_in_chat(chat_id)
     if status == "banned":
-        await processing_message.edit("❌ Assistant is banned from this chat.")
+        await processing_message.edit("❌ অ্যাসিস্ট্যান্ট এই চ্যাট থেকে নিষিদ্ধ।") # Bengali: Assistant is banned from this chat.
         return
     if status is False:
         # try to fetch an invite link to add the assistant
         invite_link = await extract_invite_link(bot, chat_id)
         if not invite_link:
-            await processing_message.edit("❌ Could not obtain an invite link to add the assistant.")
+            await processing_message.edit("❌ অ্যাসিস্ট্যান্ট যুক্ত করার জন্য একটি আমন্ত্রণ লিঙ্ক পাওয়া যায়নি।") # Bengali: Could not obtain an invite link to add the assistant.
             return
         invited = await invite_assistant(chat_id, invite_link, processing_message)
         if not invited:
@@ -670,20 +670,20 @@ async def process_play_command(message: Message, query: str):
         if m:
             query = f"https://www.youtube.com/watch?v={m.group(1)}"
 
-    # Perform YouTube search and handle results
+    # Perform Youtube and handle results
     try:
         result = await fetch_youtube_link(query)
     except Exception as primary_err:
         await processing_message.edit(
-            "⚠️ Primary search failed. Using backup API, this may take a few seconds…"
+            "⚠️ প্রাথমিক অনুসন্ধান ব্যর্থ হয়েছে। ব্যাকআপ API ব্যবহার করা হচ্ছে, এতে কয়েক সেকেন্ড সময় লাগতে পারে..." # Bengali: Primary search failed. Using backup API, this may take a few seconds…
         )
         try:
             result = await fetch_youtube_link_backup(query)
         except Exception as backup_err:
             await processing_message.edit(
-                f"❌ Both search APIs failed:\n"
-                f"Primary: {primary_err}\n"
-                f"Backup:  {backup_err}"
+                f"❌ উভয় অনুসন্ধান API ব্যর্থ হয়েছে:\n" # Bengali: Both search APIs failed:
+                f"প্রাথমিক: {primary_err}\n" # Bengali: Primary:
+                f"ব্যাকআপ:  {backup_err}" # Bengali: Backup:
             )
             return
 
@@ -691,7 +691,7 @@ async def process_play_command(message: Message, query: str):
     if isinstance(result, dict) and "playlist" in result:
         playlist_items = result["playlist"]
         if not playlist_items:
-            await processing_message.edit("❌ No videos found in the playlist.")
+            await processing_message.edit("❌ প্লেলিস্টে কোনো ভিডিও পাওয়া যায়নি।") # Bengali: No videos found in the playlist.
             return
 
         chat_containers.setdefault(chat_id, [])
@@ -702,14 +702,14 @@ async def process_play_command(message: Message, query: str):
                 "title": item["title"],
                 "duration": iso8601_to_human_readable(item["duration"]),
                 "duration_seconds": secs,
-                "requester": message.from_user.first_name if message.from_user else "Unknown",
+                "requester": message.from_user.first_name if message.from_user else "অজানা", # Bengali: Unknown
                 "thumbnail": item["thumbnail"]
             })
 
         total = len(playlist_items)
         reply_text = (
-            f"✨ Added to playlist\n"
-            f"Total songs added to queue: {total}\n"
+            f"✨ প্লেলিস্টে যুক্ত করা হয়েছে\n" # Bengali: Added to playlist
+            f"কিউতে যুক্ত করা গানের মোট সংখ্যা: {total}\n" # Bengali: Total songs added to queue:
             f"#1 - {playlist_items[0]['title']}"
         )
         if total > 1:
@@ -727,14 +727,14 @@ async def process_play_command(message: Message, query: str):
         video_url, title, duration_iso, thumb = result
         if not video_url:
             await processing_message.edit(
-                "❌ Could not find the song. Try another query.\nSupport: @frozensupport1"
+                "❌ গানটি খুঁজে পাওয়া যায়নি। অন্য একটি ক্যোয়ারী চেষ্টা করুন।\nসহায়তা: @YOUV1" # Bengali: Could not find the song. Try another query.\nSupport: @YOUV1
             )
             return
 
         secs = isodate.parse_duration(duration_iso).total_seconds()
         if secs > MAX_DURATION_SECONDS:
             await processing_message.edit(
-                "❌ Streams longer than 15 min are not allowed. If u are the owner of this bot contact @xyz09723 to upgrade your plan"
+                "❌ ১৫ মিনিটের বেশি স্ট্রিম অনুমতি নেই। আপনি যদি এই বটের মালিক হন তবে আপনার প্ল্যান আপগ্রেড করতে @HACKER_ONWER এর সাথে যোগাযোগ করুন।" # Bengali: Streams longer than 15 min are not allowed. If u are the owner of this bot contact @HACKER_ONWER to upgrade your plan
             )
             return
 
@@ -745,7 +745,7 @@ async def process_play_command(message: Message, query: str):
             "title": title,
             "duration": readable,
             "duration_seconds": secs,
-            "requester": message.from_user.first_name if message.from_user else "Unknown",
+            "requester": message.from_user.first_name if message.from_user else "অজানা", # Bengali: Unknown
             "thumbnail": thumb
         })
 
@@ -754,15 +754,15 @@ async def process_play_command(message: Message, query: str):
             await fallback_local_playback(chat_id, processing_message, chat_containers[chat_id][0])
         else:
             queue_buttons = InlineKeyboardMarkup([
-                [InlineKeyboardButton("⏭ Skip", callback_data="skip"),
-                 InlineKeyboardButton("🗑 Clear", callback_data="clear")]
+                [InlineKeyboardButton("⏭ স্কিপ", callback_data="skip"), # Bengali: Skip
+                 InlineKeyboardButton("🗑 পরিষ্কার করুন", callback_data="clear")] # Bengali: Clear
             ])
             await message.reply(
-                f"✨ Added to queue :\n\n"
-                f"**❍ Title ➥** {title}\n"
-                f"**❍ Time ➥** {readable}\n"
-                f"**❍ By ➥ ** {message.from_user.first_name if message.from_user else 'Unknown'}\n"
-                f"**Queue number:** {len(chat_containers[chat_id]) - 1}",
+                f"✨ কিউতে যুক্ত করা হয়েছে :\n\n" # Bengali: Added to queue :
+                f"**❍ শিরোনাম ➥** {title}\n" # Bengali: Title
+                f"**❍ সময় ➥** {readable}\n" # Bengali: Time
+                f"**❍ দ্বারা ➥ ** {message.from_user.first_name if message.from_user else 'অজানা'}\n" # Bengali: By
+                f"**কিউ নম্বর:** {len(chat_containers[chat_id]) - 1}", # Bengali: Queue number:
                 reply_markup=queue_buttons
             )
             await processing_message.delete()
@@ -802,10 +802,10 @@ def parse_duration_str(duration_str: str) -> int:
                     hours, minutes, seconds = parts
                     return hours * 3600 + minutes * 60 + seconds
             except Exception as e2:
-                print(f"Error parsing colon-separated duration '{duration_str}': {e2}")
+                print(f"কোলন-বিভক্ত সময়কাল '{duration_str}' পার্স করতে ত্রুটি: {e2}") # Bengali: Error parsing colon-separated duration '{duration_str}': {e2}
                 return 0
         else:
-            print(f"Error parsing duration '{duration_str}': {e}")
+            print(f"সময়কাল '{duration_str}' পার্স করতে ত্রুটি: {e}") # Bengali: Error parsing duration '{duration_str}': {e}
             return 0
 
 def format_time(seconds: float) -> str:
@@ -827,7 +827,7 @@ def get_progress_bar_styled(elapsed: float, total: float, bar_length: int = 14) 
     For example: 0:30 —❄️———— 3:09
     """
     if total <= 0:
-        return "Progress: N/A"
+        return "অগ্রগতি: N/A" # Bengali: Progress: N/A
     fraction = min(elapsed / total, 1)
     marker_index = int(fraction * bar_length)
     if marker_index >= bar_length:
@@ -858,687 +858,3 @@ async def update_progress_caption(
         # Rebuild the keyboard with updated progress bar in the second row
         control_row = [
             InlineKeyboardButton(text="▷", callback_data="pause"),
-            InlineKeyboardButton(text="II", callback_data="resume"),
-            InlineKeyboardButton(text="‣‣I", callback_data="skip"),
-            InlineKeyboardButton(text="▢", callback_data="stop")
-        ]
-        progress_button = InlineKeyboardButton(text=progress_bar, callback_data="progress")
-        playlist_button = InlineKeyboardButton(text="➕ᴀᴅᴅ тσ ρℓαυℓιѕт➕", callback_data="add_to_playlist")
-
-        new_keyboard = InlineKeyboardMarkup([
-            control_row,
-            [progress_button],
-            [playlist_button]
-        ])
-
-        try:
-            await bot.edit_message_caption(
-                chat_id,
-                progress_message.id,
-                caption=base_caption,
-                reply_markup=new_keyboard
-            )
-        except Exception as e:
-            # Ignore MESSAGE_NOT_MODIFIED, otherwise break
-            if "MESSAGE_NOT_MODIFIED" in str(e):
-                pass
-            else:
-                print(f"Error updating progress caption for chat {chat_id}: {e}")
-                break
-
-        if elapsed >= total_duration:
-            break
-
-        await asyncio.sleep(18)
-
-
-
-LOG_CHAT_ID = "@frozenmusiclogs"
-
-async def fallback_local_playback(chat_id: int, message: Message, song_info: dict):
-    playback_mode[chat_id] = "local"
-    try:
-        # Cancel any existing playback task
-        if chat_id in playback_tasks:
-            playback_tasks[chat_id].cancel()
-
-        # Validate URL
-        video_url = song_info.get("url")
-        if not video_url:
-            print(f"Invalid video URL for song: {song_info}")
-            chat_containers[chat_id].pop(0)
-            return
-
-        # Notify
-        try:
-            await message.edit(f"Starting local playback for ⚡ {song_info['title']}...")
-        except Exception:
-            message = await bot.send_message(
-                chat_id,
-                f"Starting local playback for ⚡ {song_info['title']}..."
-            )
-
-        # Download & play locally
-        media_path = await vector_transport_resolver(video_url)
-        await call_py.play(
-            chat_id,
-            MediaStream(media_path, video_flags=MediaStream.Flags.IGNORE)
-        )
-        playback_tasks[chat_id] = asyncio.current_task()
-
-        # Prepare caption & keyboard
-        total_duration = parse_duration_str(song_info.get("duration", "0:00"))
-        one_line = _one_line_title(song_info["title"])
-        base_caption = (
-            "<blockquote>"
-            "<b>🎧 Frozen ✘ Music Streaming</b> (Local Playback)\n\n"
-            f"❍ <b>Title:</b> {one_line}\n"
-            f"❍ <b>Requested by:</b> {song_info['requester']}"
-            "</blockquote>"
-        )
-        initial_progress = get_progress_bar_styled(0, total_duration)
-
-        control_row = [
-            InlineKeyboardButton(text="▷", callback_data="pause"),
-            InlineKeyboardButton(text="II", callback_data="resume"),
-            InlineKeyboardButton(text="‣‣I", callback_data="skip"),
-            InlineKeyboardButton(text="▢", callback_data="stop"),
-        ]
-        progress_button = InlineKeyboardButton(text=initial_progress, callback_data="progress")
-        base_keyboard = InlineKeyboardMarkup([control_row, [progress_button]])
-
-        # Use raw thumbnail if available
-        thumb_url = song_info.get("thumbnail")
-        progress_message = await message.reply_photo(
-            photo=thumb_url,
-            caption=base_caption,
-            reply_markup=base_keyboard,
-            parse_mode=ParseMode.HTML
-        )
-
-        # Remove "processing" message
-        await message.delete()
-
-        # Kick off progress updates
-        asyncio.create_task(
-            update_progress_caption(
-                chat_id,
-                progress_message,
-                time.time(),
-                total_duration,
-                base_caption
-            )
-        )
-
-        # Log start
-        asyncio.create_task(
-            bot.send_message(
-                LOG_CHAT_ID,
-                "#started_streaming\n"
-                f"• Title: {song_info.get('title','Unknown')}\n"
-                f"• Duration: {song_info.get('duration','Unknown')}\n"
-                f"• Requested by: {song_info.get('requester','Unknown')}\n"
-                f"• Mode: local"
-            )
-        )
-
-    except Exception as e:
-        print(f"Error during fallback local playback in chat {chat_id}: {e}")
-        await bot.send_message(
-            chat_id,
-            f"❌ Failed to play “{song_info.get('title','Unknown')}” locally: {e}"
-        )
-
-        if chat_id in chat_containers and chat_containers[chat_id]:
-            chat_containers[chat_id].pop(0)
-
-
-
-
-@bot.on_callback_query()
-async def callback_query_handler(client, callback_query):
-    chat_id = callback_query.message.chat.id
-    user_id = callback_query.from_user.id
-    data = callback_query.data
-    user = callback_query.from_user
-
-    # Check admin
-    if not await deterministic_privilege_validator(callback_query):
-        await callback_query.answer("❌ You need to be an admin to use this button.", show_alert=True)
-        return
-
-    # ----------------- PAUSE -----------------
-    if data == "pause":
-        try:
-            await call_py.pause(chat_id)
-            await callback_query.answer("⏸ Playback paused.")
-            await client.send_message(chat_id, f"⏸ Playback paused by {user.first_name}.")
-        except Exception as e:
-            await callback_query.answer("❌ Error pausing playback.", show_alert=True)
-
-    # ----------------- RESUME -----------------
-    elif data == "resume":
-        try:
-            await call_py.resume(chat_id)
-            await callback_query.answer("▶️ Playback resumed.")
-            await client.send_message(chat_id, f"▶️ Playback resumed by {user.first_name}.")
-        except Exception as e:
-            await callback_query.answer("❌ Error resuming playback.", show_alert=True)
-
-    # ----------------- SKIP -----------------
-    elif data == "skip":
-        if chat_id in chat_containers and chat_containers[chat_id]:
-            skipped_song = chat_containers[chat_id].pop(0)
-
-            try:
-                await call_py.leave_call(chat_id)
-            except Exception as e:
-                print("Local leave_call error:", e)
-            await asyncio.sleep(3)
-
-            try:
-                os.remove(skipped_song.get('file_path', ''))
-            except Exception as e:
-                print(f"Error deleting file: {e}")
-
-            await client.send_message(chat_id, f"⏩ {user.first_name} skipped **{skipped_song['title']}**.")
-
-            if chat_id in chat_containers and chat_containers[chat_id]:
-                await callback_query.answer("⏩ Skipped! Playing next song...")
-
-                # Play next song directly using fallback_local_playback
-                next_song_info = chat_containers[chat_id][0]
-                try:
-                    dummy_msg = await bot.send_message(chat_id, f"🎧 Preparing next song: **{next_song_info['title']}** ...")
-                    await fallback_local_playback(chat_id, dummy_msg, next_song_info)
-                except Exception as e:
-                    print(f"Error starting next local playback: {e}")
-                    await bot.send_message(chat_id, f"❌ Failed to start next song: {e}")
-
-            else:
-                await callback_query.answer("⏩ Skipped! No more songs in the queue.")
-        else:
-            await callback_query.answer("❌ No songs in the queue to skip.", show_alert=True)
-
-    # ----------------- CLEAR -----------------
-    elif data == "clear":
-        if chat_id in chat_containers:
-            for song in chat_containers[chat_id]:
-                try:
-                    os.remove(song.get('file_path', ''))
-                except Exception as e:
-                    print(f"Error deleting file: {e}")
-            chat_containers.pop(chat_id)
-            await callback_query.message.edit("🗑️ Cleared the queue.")
-            await callback_query.answer("🗑️ Cleared the queue.")
-        else:
-            await callback_query.answer("❌ No songs in the queue to clear.", show_alert=True)
-
-    # ----------------- STOP -----------------
-    elif data == "stop":
-        if chat_id in chat_containers:
-            for song in chat_containers[chat_id]:
-                try:
-                    os.remove(song.get('file_path', ''))
-                except Exception as e:
-                    print(f"Error deleting file: {e}")
-            chat_containers.pop(chat_id)
-
-        try:
-            await call_py.leave_call(chat_id)
-            await callback_query.answer("🛑 Playback stopped and queue cleared.")
-            await client.send_message(chat_id, f"🛑 Playback stopped and queue cleared by {user.first_name}.")
-        except Exception as e:
-            print("Stop error:", e)
-            await callback_query.answer("❌ Error stopping playback.", show_alert=True)
-
-
-
-
-@call_py.on_update(fl.stream_end())
-async def stream_end_handler(_: PyTgCalls, update: StreamEnded):
-    chat_id = update.chat_id
-
-    if chat_id in chat_containers and chat_containers[chat_id]:
-        # Remove the finished song from the queue
-        skipped_song = chat_containers[chat_id].pop(0)
-        await asyncio.sleep(3)  # Delay to ensure the stream has fully ended
-
-        try:
-            os.remove(skipped_song.get('file_path', ''))
-        except Exception as e:
-            print(f"Error deleting file: {e}")
-
-        if chat_id in chat_containers and chat_containers[chat_id]:
-            # If there are more songs, play next song directly using fallback_local_playback
-            next_song_info = chat_containers[chat_id][0]
-            try:
-                # Create a fake message object to pass
-                dummy_msg = await bot.send_message(chat_id, f"🎧 Preparing next song: **{next_song_info['title']}** ...")
-                await fallback_local_playback(chat_id, dummy_msg, next_song_info)
-            except Exception as e:
-                print(f"Error starting next local playback: {e}")
-                await bot.send_message(chat_id, f"❌ Failed to start next song: {e}")
-        else:
-            # Queue empty; leave VC
-            await leave_voice_chat(chat_id)
-            await bot.send_message(chat_id, "❌ No more songs in the queue.")
-    else:
-        # No songs in the queue
-        await leave_voice_chat(chat_id)
-        await bot.send_message(chat_id, "❌ No more songs in the queue.")
-
-
-
-async def leave_voice_chat(chat_id):
-    try:
-        await call_py.leave_call(chat_id)
-    except Exception as e:
-        print(f"Error leaving the voice chat: {e}")
-
-    if chat_id in chat_containers:
-        for song in chat_containers[chat_id]:
-            try:
-                os.remove(song.get('file_path', ''))
-            except Exception as e:
-                print(f"Error deleting file: {e}")
-        chat_containers.pop(chat_id)
-
-    if chat_id in playback_tasks:
-        playback_tasks[chat_id].cancel()
-        del playback_tasks[chat_id]
-
-
-
-@bot.on_message(filters.group & filters.command(["stop", "end"]))
-async def stop_handler(client, message):
-    chat_id = message.chat.id
-
-    # Check admin rights
-    if not await deterministic_privilege_validator(message):
-        await message.reply("❌ You need to be an admin to use this command.")
-        return
-
-    try:
-        await call_py.leave_call(chat_id)
-    except Exception as e:
-        if "not in a call" in str(e).lower():
-            await message.reply("❌ The bot is not currently in a voice chat.")
-        else:
-            await message.reply(f"❌ An error occurred while leaving the voice chat: {str(e)}\n\nSupport: @frozensupport1")
-        return
-
-    # Clear the song queue
-    if chat_id in chat_containers:
-        for song in chat_containers[chat_id]:
-            try:
-                os.remove(song.get('file_path', ''))
-            except Exception as e:
-                print(f"Error deleting file: {e}")
-        chat_containers.pop(chat_id)
-
-    # Cancel any playback tasks if present
-    if chat_id in playback_tasks:
-        playback_tasks[chat_id].cancel()
-        del playback_tasks[chat_id]
-
-    await message.reply("⏹ Stopped the music and cleared the queue.")
-
-
-@bot.on_message(filters.command("song"))
-async def song_command_handler(_, message):
-    keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("🎶 Download Now", url="https://t.me/songdownloader1bot?start=true")]]
-    )
-    text = (
-        "ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ᴜsᴇ ᴛʜᴇ sᴏɴɢ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ʙᴏᴛ. 🎵\n\n"
-        "ʏᴏᴜ ᴄᴀɴ sᴇɴᴅ ᴛʜᴇ sᴏɴɢ ɴᴀᴍᴇ ᴏʀ ᴀɴʏ ǫᴜᴇʀʏ ᴅɪʀᴇᴄᴛʟʏ ᴛᴏ ᴛʜᴇ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ʙᴏᴛ, ⬇️\n\n"
-        "ᴀɴᴅ ɪᴛ ᴡɪʟʟ ғᴇᴛᴄʜ ᴀɴᴅ ᴅᴏᴡɴʟᴏᴀᴅ ᴛʜᴇ sᴏɴɢ ғᴏʀ ʏᴏᴜ. 🚀"
-    )
-    await message.reply(text, reply_markup=keyboard)
-
-
-
-@bot.on_message(filters.group & filters.command("pause"))
-async def pause_handler(client, message):
-    chat_id = message.chat.id
-
-    if not await deterministic_privilege_validator(message):
-        await message.reply("❌ You need to be an admin to use this command.")
-        return
-
-    try:
-        await call_py.pause(chat_id)
-        await message.reply("⏸ Paused the stream.")
-    except Exception as e:
-        await message.reply(f"❌ Failed to pause the stream.\nError: {str(e)}")
-
-
-@bot.on_message(filters.group & filters.command("resume"))
-async def resume_handler(client, message):
-    chat_id = message.chat.id
-
-    if not await deterministic_privilege_validator(message):
-        await message.reply("❌ You need to be an admin to use this command.")
-        return
-
-    try:
-        await call_py.resume(chat_id)
-        await message.reply("▶️ Resumed the stream.")
-    except Exception as e:
-        await message.reply(f"❌ Failed to resume the stream.\nError: {str(e)}")
-
-
-
-@bot.on_message(filters.group & filters.command("skip"))
-async def skip_handler(client, message):
-    chat_id = message.chat.id
-
-    if not await deterministic_privilege_validator(message):
-        await message.reply("❌ You need to be an admin to use this command.")
-        return
-
-    status_message = await message.reply("⏩ Skipping the current song...")
-
-    if chat_id not in chat_containers or not chat_containers[chat_id]:
-        await status_message.edit("❌ No songs in the queue to skip.")
-        return
-
-    # Remove the current song from the queue
-    skipped_song = chat_containers[chat_id].pop(0)
-
-    # Always local mode only
-    try:
-        await call_py.leave_call(chat_id)
-    except Exception as e:
-        print("Local leave_call error:", e)
-
-    await asyncio.sleep(3)
-
-    # Delete the local file if exists
-    try:
-        if skipped_song.get('file_path'):
-            os.remove(skipped_song['file_path'])
-    except Exception as e:
-        print(f"Error deleting file: {e}")
-
-    # Check for next song
-    if not chat_containers.get(chat_id):
-        await status_message.edit(
-            f"⏩ Skipped **{skipped_song['title']}**.\n\n😔 No more songs in the queue."
-        )
-    else:
-        await status_message.edit(
-            f"⏩ Skipped **{skipped_song['title']}**.\n\n💕 Playing the next song..."
-        )
-        await skip_to_next_song(chat_id, status_message)
-
-
-
-
-@bot.on_message(filters.command("reboot"))
-async def reboot_handler(_, message):
-    chat_id = message.chat.id
-
-    try:
-        # Remove audio files for songs in the queue for this chat.
-        if chat_id in chat_containers:
-            for song in chat_containers[chat_id]:
-                try:
-                    os.remove(song.get('file_path', ''))
-                except Exception as e:
-                    print(f"Error deleting file for chat {chat_id}: {e}")
-            # Clear the queue for this chat.
-            chat_containers.pop(chat_id, None)
-        
-        # Cancel any playback tasks for this chat.
-        if chat_id in playback_tasks:
-            playback_tasks[chat_id].cancel()
-            del playback_tasks[chat_id]
-
-        # Remove chat-specific cooldown and pending command entries.
-        chat_last_command.pop(chat_id, None)
-        chat_pending_commands.pop(chat_id, None)
-
-        # Remove playback mode for this chat.
-        playback_mode.pop(chat_id, None)
-
-        # Clear any API playback records for this chat.
-        global api_playback_records
-        api_playback_records = [record for record in api_playback_records if record.get("chat_id") != chat_id]
-
-        # Leave the voice chat for this chat.
-        try:
-            await call_py.leave_call(chat_id)
-        except Exception as e:
-            print(f"Error leaving call for chat {chat_id}: {e}")
-
-        await message.reply("♻️ Rebooted for this chat. All data for this chat has been cleared.")
-    except Exception as e:
-        await message.reply(f"❌ Failed to reboot for this chat. Error: {str(e)}\n\n support - @frozensupport1")
-
-
-
-@bot.on_message(filters.command("ping"))
-async def ping_handler(_, message):
-    try:
-        # Calculate uptime
-        current_time = time.time()
-        uptime_seconds = int(current_time - bot_start_time)
-        uptime_str = str(timedelta(seconds=uptime_seconds))
-
-        # Local system stats
-        cpu_usage = psutil.cpu_percent(interval=1)
-        memory = psutil.virtual_memory()
-        ram_usage = f"{memory.used // (1024 ** 2)}MB / {memory.total // (1024 ** 2)}MB ({memory.percent}%)"
-        disk = psutil.disk_usage('/')
-        disk_usage = f"{disk.used // (1024 ** 3)}GB / {disk.total // (1024 ** 3)}GB ({disk.percent}%)"
-
-        # Build the final message
-        response = (
-            f"🏓 **Pong!**\n\n"
-            f"**Local Server Stats:**\n"
-            f"• **Uptime:** `{uptime_str}`\n"
-            f"• **CPU Usage:** `{cpu_usage}%`\n"
-            f"• **RAM Usage:** `{ram_usage}`\n"
-            f"• **Disk Usage:** `{disk_usage}`"
-        )
-
-        await message.reply(response)
-    except Exception as e:
-        await message.reply(f"❌ Failed to execute the command.\nError: {str(e)}\n\nSupport: @frozensupport1")
-
-
-
-
-@bot.on_message(filters.group & filters.command("clear"))
-async def clear_handler(_, message):
-    chat_id = message.chat.id
-
-    if chat_id in chat_containers:
-        # Clear the chat-specific queue
-        for song in chat_containers[chat_id]:
-            try:
-                os.remove(song.get('file_path', ''))
-            except Exception as e:
-                print(f"Error deleting file: {e}")
-        
-        chat_containers.pop(chat_id)
-        await message.reply("🗑️ Cleared the queue.")
-    else:
-        await message.reply("❌ No songs in the queue to clear.")
-
-
-@bot.on_message(filters.command("broadcast") & filters.user(OWNER_ID))
-async def broadcast_handler(_, message):
-    # Ensure the command is used in reply to a message
-    if not message.reply_to_message:
-        await message.reply("❌ Please reply to the message you want to broadcast.")
-        return
-
-    broadcast_message = message.reply_to_message
-
-    # Retrieve all broadcast chat IDs from the collection
-    all_chats = list(broadcast_collection.find({}))
-    success = 0
-    failed = 0
-
-    # Loop through each chat ID and forward the message
-    for chat in all_chats:
-        try:
-            # Ensure the chat ID is an integer (this will handle group IDs properly)
-            target_chat_id = int(chat.get("chat_id"))
-        except Exception as e:
-            print(f"Error casting chat_id: {chat.get('chat_id')} - {e}")
-            failed += 1
-            continue
-
-        try:
-            await bot.forward_messages(
-                chat_id=target_chat_id,
-                from_chat_id=broadcast_message.chat.id,
-                message_ids=broadcast_message.id
-            )
-            success += 1
-        except Exception as e:
-            print(f"Failed to broadcast to {target_chat_id}: {e}")
-            failed += 1
-
-        # Wait for 1 second to avoid flooding the server and Telegram
-        await asyncio.sleep(1)
-
-    await message.reply(f"Broadcast complete!\n✅ Success: {success}\n❌ Failed: {failed}")
-
-
-
-@bot.on_message(filters.command("frozen_check") & filters.chat(ASSISTANT_CHAT_ID))
-async def frozen_check_command(_, message):
-    await message.reply_text("frozen check successful ✨")
-
-
-
-def save_state_to_db():
-    """
-    Persist only chat_containers (queues) into MongoDB before restart.
-    """
-    data = {
-        "chat_containers": { str(cid): queue for cid, queue in chat_containers.items() }
-    }
-
-    state_backup.replace_one(
-        {"_id": "singleton"},
-        {"_id": "singleton", "state": data},
-        upsert=True
-    )
-
-    chat_containers.clear()
-
-
-def load_state_from_db():
-    """
-    Load persisted chat_containers (queues) from MongoDB on startup.
-    """
-    doc = state_backup.find_one_and_delete({"_id": "singleton"})
-    if not doc or "state" not in doc:
-        return
-
-    data = doc["state"]
-
-    for cid_str, queue in data.get("chat_containers", {}).items():
-        try:
-            chat_containers[int(cid_str)] = queue
-        except ValueError:
-            continue
-
-
-
-class WebhookHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == "/":
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(b"Bot is running!")
-        elif self.path == "/status":
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(b"Bot status: Running")
-        elif self.path == "/restart":
-            save_state_to_db()
-            os.execl(sys.executable, sys.executable, *sys.argv)
-        else:
-            self.send_response(404)
-            self.end_headers()
-
-    def do_POST(self):
-        if self.path == "/webhook":
-            try:
-                length = int(self.headers.get("Content-Length", 0))
-                body = self.rfile.read(length)
-                update = json.loads(body)
-                bot._process_update(update)
-            except Exception as e:
-                print("Error processing update:", e)
-            self.send_response(200)
-            self.end_headers()
-        else:
-            self.send_response(404)
-            self.end_headers()
-
-
-def run_http_server():
-    port = int(os.environ.get("PORT", 8080))
-    server = HTTPServer(("", port), WebhookHandler)
-    print(f"HTTP server running on port {port}")
-    server.serve_forever()
-
-
-threading.Thread(target=run_http_server, daemon=True).start()
-
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)-8s | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
-logger = logging.getLogger(__name__)
-
-
-if __name__ == "__main__":
-    logger.info("Loading persisted state from MongoDB...")
-    load_state_from_db()
-    logger.info("State loaded successfully.")
-
-    logger.info("Starting Frozen Music Bot services...")
-
-    logger.info("→ Starting PyTgCalls client...")
-    call_py.start()
-    logger.info("PyTgCalls client started.")
-
-    logger.info("→ Starting Telegram bot (bot.run)...")
-    try:
-        bot.run()
-        logger.info("Telegram bot has started.")
-    except Exception as e:
-        logger.error(f"Error starting Telegram bot: {e}")
-        sys.exit(1)
-
-    # Fetch bot name and link and set default values from environment
-    BOT_NAME = os.environ.get("BOT_NAME", "Frozen Music")
-    BOT_LINK = os.environ.get("BOT_LINK", "https://t.me/vcmusiclubot")
-    logger.info(f"Bot name set to: {BOT_NAME}")
-    logger.info(f"Bot link set to: {BOT_LINK}")
-
-    # If assistant is used for voice or other tasks
-    if not assistant.is_connected:
-        logger.info("Assistant not connected; starting assistant client...")
-        assistant.run()
-        logger.info("Assistant client connected.")
-
-    logger.info("All services are up and running. Bot started successfully.")
-    
-
-    idle()
-
-
-
-
