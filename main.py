@@ -64,7 +64,7 @@ API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 ASSISTANT_SESSION = os.environ.get("ASSISTANT_SESSION")
-OWNER_ID = int(os.getenv("OWNER_ID", "5268762773"))
+OWNER_ID = int(os.getenv("OWNER_ID", "6829790680"))
 
 # ——— Monkey-patch resolve_peer ——————————————
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
@@ -399,10 +399,10 @@ async def start_handler(_, message):
     buttons = [
         [
             InlineKeyboardButton(f"➕ {add_me_text}", url=f"{BOT_LINK}?startgroup=true"),
-            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/vibeshiftbots")
+            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/YOUV1")
         ],
         [
-            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/Frozensupport1"),
+            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/YOUV1"),
             InlineKeyboardButton(f"❓ {help_text}", callback_data="show_help")
         ]
     ]
@@ -454,10 +454,10 @@ async def go_back_callback(_, callback_query):
     buttons = [
         [
             InlineKeyboardButton(f"➕ {add_me_text}", url=f"{BOT_LINK}?startgroup=true"),
-            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/vibeshiftbots")
+            InlineKeyboardButton(f"📢 {updates_text}", url="https://t.me/YOUV1")
         ],
         [
-            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/Frozensupport1"),
+            InlineKeyboardButton(f"💬 {support_text}", url="https://t.me/HACKER_ONWER"),
             InlineKeyboardButton(f"❓ {help_text}", callback_data="show_help")
         ]
     ]
@@ -727,7 +727,7 @@ async def process_play_command(message: Message, query: str):
         video_url, title, duration_iso, thumb = result
         if not video_url:
             await processing_message.edit(
-                "❌ Could not find the song. Try another query.\nSupport: @frozensupport1"
+                "❌ Could not find the song. Try another query.\nSupport: @HACKER_ONWER"
             )
             return
 
@@ -893,7 +893,7 @@ async def update_progress_caption(
 
 
 
-LOG_CHAT_ID = "@frozenmusiclogs"
+LOG_CHAT_ID = "@logesssssss"
 
 async def fallback_local_playback(chat_id: int, message: Message, song_info: dict):
     playback_mode[chat_id] = "local"
@@ -931,7 +931,7 @@ async def fallback_local_playback(chat_id: int, message: Message, song_info: dic
         one_line = _one_line_title(song_info["title"])
         base_caption = (
             "<blockquote>"
-            "<b>🎧 Frozen ✘ Music Streaming</b> (Local Playback)\n\n"
+            "<b>🎧 you v 1 ✘ Music Streaming</b> (Local Playback)\n\n"
             f"❍ <b>Title:</b> {one_line}\n"
             f"❍ <b>Requested by:</b> {song_info['requester']}"
             "</blockquote>"
@@ -1413,7 +1413,7 @@ async def broadcast_handler(_, message):
 
 @bot.on_message(filters.command("frozen_check") & filters.chat(ASSISTANT_CHAT_ID))
 async def frozen_check_command(_, message):
-    await message.reply_text("frozen check successful ✨")
+    await message.reply_text("you v 1 check successful ✨")
 
 
 
@@ -1523,8 +1523,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Fetch bot name and link and set default values from environment
-    BOT_NAME = os.environ.get("BOT_NAME", "Frozen Music")
-    BOT_LINK = os.environ.get("BOT_LINK", "https://t.me/vcmusiclubot")
+    BOT_NAME = os.environ.get("BOT_NAME", "@YOUV2PLAYBOT")
+    BOT_LINK = os.environ.get("BOT_LINK", "https://t.me/HACKER_ONWER")
     logger.info(f"Bot name set to: {BOT_NAME}")
     logger.info(f"Bot link set to: {BOT_LINK}")
 
